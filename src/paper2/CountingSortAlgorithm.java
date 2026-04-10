@@ -30,9 +30,12 @@ public class CountingSortAlgorithm {
 	 * 
 	 */
 	void quicksort_modified(int arr[], int low, int high,int maxValue, int minValue) {
-		
+
+        if (maxValue == minValue){
+            return;
+        }
 		//only continue partitioning if:
-		//	- the sub-array has  more than one element (low<high) 
+		//	- the sub-array has  more than one element (low<high)
 		//	- the combined value range+index range still exceeds the cache
 		//once both conditions are met -> the partition is small enough to fit in cache so we move on to next
 		while ((low < high) &&(maxValue- minValue + high - low > C)) {
@@ -46,6 +49,8 @@ public class CountingSortAlgorithm {
 			return; //return after handling both halves
 		}
 	}
+
+
 	
 	
 	/*
