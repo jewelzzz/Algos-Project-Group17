@@ -3,10 +3,14 @@ package paper2;
 /*
  * CountingSortAlgorithm implements a hybrid sorting algorithm described in Paper 2
  * 
- * There are two phases to the algorithm:
- * 	1. A modified quicksort that partially sorts the array into cache-friendly partitions to prevent cache misses,
+ * There are two phases to the proposed algorithm:
+ * 	1. A modified quicksort for preprocessing that partially sorts the array into cache-friendly partitions to prevent cache misses,
  * 		stopping early once each partition is small enough to fit inside CPU cache
  *  2. A standard counting sort applied to the now partially sorted array
+ *
+ * The following code also contains:
+ * - A classic quicksort implementation for comparison to the proposed algorithm (Table 3 in the paper)
+ * - A quicksort with insertion sort hybrid for comparison to the proposed algorithm (Table 3 in the paper)
  * 
  */
 
@@ -18,10 +22,12 @@ public class CountingSortAlgorithm {
 	 * 	fits within C, meaning subarray is small enough to reside in CPU cache
 	 */
 	static final int C = 1000;
-	
-	
+
+    // Threshold for insertion sort in hybrid algorithm
+    private static final int INSERTION_THRESHOLD = 10;
+
 	/*
-	 * 1. Modified QuickSort that partitions without fully sorting 
+	 * 1. Modified QuickSort that partitions without fully sorting (Algorithm 2 from paper)
 	 * 
 	 * Stops recursing early unlike standard quicksort after a sub-array is small enough to fit inside cache
 	 * Result: 
@@ -108,7 +114,7 @@ public class CountingSortAlgorithm {
 	
 	
 	/*
-	 * 2. Counting sort applied to the pre-partitioned array
+	 * 2. Counting sort applied to the pre-partitioned array (Algorithm 1 from paper)
 	 * 
 	 * Counting sort is non-comparison, stable sort with O(n+r) time complexity
 	 * 	where r is value range. 
@@ -146,7 +152,7 @@ public class CountingSortAlgorithm {
 		//build output array by placing each element at its sorted position 
 		//iterate in reverse to maintain stability (equal elements preserve original order)
 		for(int i = n-1; i>=0; i--) {
-			output[count[arr[i]]] = arr[i]; //place element at computed position
+			output[count[arr[i]] - 1] = arr[i]; //place element at computed position
 			count[arr[i]] -= 1; //decrement so next equal value goes one spot earlier
 		}
 		
@@ -155,7 +161,56 @@ public class CountingSortAlgorithm {
 			arr[i] = output[i]; 
 		}
 	}
-	
+
+
+    /*
+     * Classic quicksort algorithm - no early termination
+     */
+    public void quicksort_classic(int arr[], int low, int high) {
+        if (low < high) {
+            int pivot = partition(arr, low, high);
+            quicksort_classic(arr, low, pivot - 1);
+            quicksort_classic(arr, pivot + 1, high);
+        }
+    }
+
+    // ============================================================
+    // QUICKSORT WITH INSERTION SORT (for Table 3 comparison)
+    // ============================================================
+
+    /*
+     * Hybrid quicksort that switches to insertion sort for small partitions
+     */
+    public void quicksort_with_insertion(int arr[], int low, int high) {
+        if (low < high) {
+            // Use insertion sort for small partitions
+            if (high - low < INSERTION_THRESHOLD) {
+                insertionSort(arr, low, high);
+            } else {
+                int pivot = partition(arr, low, high);
+                quicksort_with_insertion(arr, low, pivot - 1);
+                quicksort_with_insertion(arr, pivot + 1, high);
+            }
+        }
+    }
+
+    /*
+     * Insertion sort for small partitions
+     */
+    private void insertionSort(int arr[], int low, int high) {
+        for (int i = low + 1; i <= high; i++) {
+            int key = arr[i];
+            int j = i - 1;
+
+            while (j >= low && arr[j] > key) {
+                arr[j + 1] = arr[j];
+                j--;
+            }
+            arr[j + 1] = key;
+        }
+    }
+
+
 	/*
 	 * Returns maximum value in arr[0..n-1]
 	 * Used by countingsort to determine range of count array 
