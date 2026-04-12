@@ -112,6 +112,7 @@ public class Benchmark {
                 int[] arr = randomArray(n, r);
 
                 // with preprocessing (hybrid approach)
+                // with preprocessing (hybrid approach)
                 int[] arrCopy = Arrays.copyOf(arr, n);
                 CountingSortAlgorithm sorter = new CountingSortAlgorithm();
                 int max = CountingSortAlgorithm.getMax(arrCopy, n);
@@ -122,7 +123,7 @@ public class Benchmark {
                 preprocessTime += (System.nanoTime() - start) / 1000000.0;
 
                 start = System.nanoTime();
-                sorter.countingsort(arrCopy, n);
+                sorter.countingsort_by_partitions(arrCopy, n); // <-- only change on this line
                 countSortTime += (System.nanoTime() - start) / 1000000.0;
 
                 // without preprocessing (plain counting sort)
