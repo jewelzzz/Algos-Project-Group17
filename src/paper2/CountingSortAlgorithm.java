@@ -161,29 +161,6 @@ public class CountingSortAlgorithm {
 			arr[j] = temp;
 		}		
 	}
-
-    void countingsort_ranged(int arr[], int n){
-        int max = getMax(arr, n);
-        int min = getMin(arr, n);
-        int range = max - min + 1;
-
-        int[] output = new int[n];
-        int[] count = new int[range]; // much smaller when values are clustered
-
-        for (int i = 0; i < n; i++)
-            count[arr[i] - min]++;
-
-        for (int i = 1; i < range; i++)
-            count[i] += count[i - 1];
-
-        for (int i = n - 1; i >= 0; i--) {
-            output[count[arr[i] - min] - 1] = arr[i];
-            count[arr[i] - min]--;
-        }
-
-        for (int i = 0; i < n; i++)
-            arr[i] = output[i];
-    }
 	
 	
 	/*

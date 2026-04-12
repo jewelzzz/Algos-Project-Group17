@@ -188,7 +188,7 @@ public class Benchmark {
                 int min = CountingSortAlgorithm.getMin(arr3, n);
                 start = System.nanoTime();
                 sorter.quicksort_modified(arr3, 0, n - 1, max, min);
-                sorter.countingsort(arr3, n);
+                sorter.countingsort_by_partitions(arr3, n);
                 proposedTime += (System.nanoTime() - start) / 1000000.0;
             }
 
