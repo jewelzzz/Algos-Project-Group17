@@ -65,13 +65,13 @@ public class Benchmark {
                 //random input
                 int[] arr = randomArray(n, n);
                 long start = System.nanoTime();
-                new CountingSortAlgorithm().countingsort_by_partitions(arr, n);
+                new CountingSortAlgorithm().countingsort(arr, n);
                 randomTime += (System.nanoTime() - start) / 1000000.0;
 
                 //sorted input
                 arr = sortedArray(n);
                 start = System.nanoTime();
-                new CountingSortAlgorithm().countingsort_by_partitions(arr, n);
+                new CountingSortAlgorithm().countingsort(arr, n);
                 sortedTime += (System.nanoTime() - start) / 1000000.0;
             }
 
@@ -111,7 +111,6 @@ public class Benchmark {
             {
                 int[] arr = randomArray(n, r);
 
-                // with preprocessing (hybrid approach)
                 // with preprocessing (hybrid approach)
                 int[] arrCopy = Arrays.copyOf(arr, n);
                 CountingSortAlgorithm sorter = new CountingSortAlgorithm();
