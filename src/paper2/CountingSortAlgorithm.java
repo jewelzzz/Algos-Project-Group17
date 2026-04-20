@@ -56,53 +56,7 @@ public class CountingSortAlgorithm {
 		}
 	}
 
-    void countingsort_by_partitions(int[] arr, int n) {
-        int i = 0;
-        while (i < n) {
-            // Find the extent of this partition using the same C threshold
-            int partMin = arr[i];
-            int partMax = arr[i];
-            int j = i + 1;
-
-            while (j < n) {
-                int newMin = Math.min(partMin, arr[j]);
-                int newMax = Math.max(partMax, arr[j]);
-                // Stop expanding if adding this element would exceed cache threshold
-                if ((newMax - newMin + (j - i)) > C) break;
-                partMin = newMin;
-                partMax = newMax;
-                j++;
-            }
-
-            countingsort_ranged_segment(arr, i, j - 1, partMin, partMax);
-            i = j;
-        }
-    }
-
-    private void countingsort_ranged_segment(int[] arr, int low, int high, int min, int max) {
-        if (max < min){
-            return;
-        }
-
-        int range = max - min + 1;
-
-        if (range <= 0){
-            return;
-        }
-        int[] count = new int[range];
-
-        for (int i = low; i <= high; i++) {
-            count[arr[i] - min]++;
-        }
-
-        int idx = low;
-        for (int v = 0; v < range; v++) {
-            while (count[v]-- > 0){
-                arr[idx++] = v + min;
-            }
-        }
-    }
-	
+    
 	
 	/*
 	 * Partitions the sub-array around a pivot using a median of three pivot selection strategy
@@ -211,6 +165,55 @@ public class CountingSortAlgorithm {
 			arr[i] = output[i]; 
 		}
 	}
+	
+	
+	public void countingsort_by_partitions(int[] arr, int n) {
+        int i = 0;
+        while (i < n) {
+            // Find the extent of this partition using the same C threshold
+            int partMin = arr[i];
+            int partMax = arr[i];
+            int j = i + 1;
+
+            while (j < n) {
+                int newMin = Math.min(partMin, arr[j]);
+                int newMax = Math.max(partMax, arr[j]);
+                // Stop expanding if adding this element would exceed cache threshold
+                if ((newMax - newMin + (j - i)) > C) break;
+                partMin = newMin;
+                partMax = newMax;
+                j++;
+            }
+
+            countingsort_ranged_segment(arr, i, j - 1, partMin, partMax);
+            i = j;
+        }
+    }
+
+	
+    private void countingsort_ranged_segment(int[] arr, int low, int high, int min, int max) {
+        if (max < min){
+            return;
+        }
+
+        int range = max - min + 1;
+
+        if (range <= 0){
+            return;
+        }
+        int[] count = new int[range];
+
+        for (int i = low; i <= high; i++) {
+            count[arr[i] - min]++;
+        }
+
+        int idx = low;
+        for (int v = 0; v < range; v++) {
+            while (count[v]-- > 0){
+                arr[idx++] = v + min;
+            }
+        }
+    }
 
 
     /*
