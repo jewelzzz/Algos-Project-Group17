@@ -35,7 +35,7 @@ public class CountingSortAlgorithm {
 	 * 		- within each section, elements may still be unsorted
 	 * 
 	 */
-	void quicksort_modified(int arr[], int low, int high,int maxValue, int minValue) {
+	void quicksortModified(int arr[], int low, int high,int maxValue, int minValue) {
 
         if (maxValue == minValue){
             return;
@@ -49,14 +49,60 @@ public class CountingSortAlgorithm {
 			int pivot = partition(arr, low, high); //partition around pivot - returns pivot index
 			int midValue = arr[pivot]; //value at pivot position after partitioning
 			
-			quicksort_modified(arr, low,pivot - 1, midValue, minValue); //recursively partition left half
-			quicksort_modified(arr, pivot + 1, high, maxValue, midValue); //recursively partition the right half 
+			quicksortModified(arr, low,pivot - 1, midValue, minValue); //recursively partition left half
+			quicksortModified(arr, pivot + 1, high, maxValue, midValue); //recursively partition the right half
 			
 			return; //return after handling both halves
 		}
 	}
 
-    
+    void countingSortByPartitions(int[] arr, int n) {
+        int i = 0;
+        while (i < n) {
+            // Find the extent of this partition using the same C threshold
+            int partMin = arr[i];
+            int partMax = arr[i];
+            int j = i + 1;
+
+            while (j < n) {
+                int newMin = Math.min(partMin, arr[j]);
+                int newMax = Math.max(partMax, arr[j]);
+                // Stop expanding if adding this element would exceed cache threshold
+                if ((newMax - newMin + (j - i)) > C) break;
+                partMin = newMin;
+                partMax = newMax;
+                j++;
+            }
+
+            countingSortSegment(arr, i, j - 1, partMin, partMax);
+            i = j;
+        }
+    }
+
+    private void countingSortSegment(int[] arr, int low, int high, int min, int max) {
+        if (max < min){
+            return;
+        }
+
+        int range = max - min + 1;
+
+        if (range <= 0){
+            return;
+        }
+        int[] count = new int[range];
+
+        for (int i = low; i <= high; i++) {
+            count[arr[i] - min]++;
+        }
+
+        int idx = low;
+        for (int v = 0; v < range; v++) {
+            while (count[v]-- > 0){
+                arr[idx++] = v + min;
+            }
+        }
+    }
+	
 	
 	/*
 	 * Partitions the sub-array around a pivot using a median of three pivot selection strategy
@@ -131,7 +177,7 @@ public class CountingSortAlgorithm {
 	 * 	quicksort_modified, this steps benefits from improved cache locality
 	 * 
 	 */
-	void countingsort(int arr[], int n) {
+	void countingSort(int arr[], int n) {
 		
 		int[] output= new int[n+1]; //output buffer (1-indexed due to prefix sum logic)
 		
@@ -165,84 +211,31 @@ public class CountingSortAlgorithm {
 			arr[i] = output[i]; 
 		}
 	}
-	
-	
-	public void countingsort_by_partitions(int[] arr, int n) {
-        int i = 0;
-        while (i < n) {
-            // Find the extent of this partition using the same C threshold
-            int partMin = arr[i];
-            int partMax = arr[i];
-            int j = i + 1;
-
-            while (j < n) {
-                int newMin = Math.min(partMin, arr[j]);
-                int newMax = Math.max(partMax, arr[j]);
-                // Stop expanding if adding this element would exceed cache threshold
-                if ((newMax - newMin + (j - i)) > C) break;
-                partMin = newMin;
-                partMax = newMax;
-                j++;
-            }
-
-            countingsort_ranged_segment(arr, i, j - 1, partMin, partMax);
-            i = j;
-        }
-    }
-
-	
-    private void countingsort_ranged_segment(int[] arr, int low, int high, int min, int max) {
-        if (max < min){
-            return;
-        }
-
-        int range = max - min + 1;
-
-        if (range <= 0){
-            return;
-        }
-        int[] count = new int[range];
-
-        for (int i = low; i <= high; i++) {
-            count[arr[i] - min]++;
-        }
-
-        int idx = low;
-        for (int v = 0; v < range; v++) {
-            while (count[v]-- > 0){
-                arr[idx++] = v + min;
-            }
-        }
-    }
 
 
     /*
      * Classic quicksort algorithm - no early termination
      */
-    public void quicksort_classic(int arr[], int low, int high) {
+    public void quicksortClassic(int arr[], int low, int high) {
         if (low < high) {
             int pivot = partition(arr, low, high);
-            quicksort_classic(arr, low, pivot - 1);
-            quicksort_classic(arr, pivot + 1, high);
+            quicksortClassic(arr, low, pivot - 1);
+            quicksortClassic(arr, pivot + 1, high);
         }
     }
-
-    // ============================================================
-    // QUICKSORT WITH INSERTION SORT (for Table 3 comparison)
-    // ============================================================
 
     /*
      * Hybrid quicksort that switches to insertion sort for small partitions
      */
-    public void quicksort_with_insertion(int arr[], int low, int high) {
+    public void quicksortWithInsertion(int arr[], int low, int high) {
         if (low < high) {
             // Use insertion sort for small partitions
             if (high - low < INSERTION_THRESHOLD) {
                 insertionSort(arr, low, high);
             } else {
                 int pivot = partition(arr, low, high);
-                quicksort_with_insertion(arr, low, pivot - 1);
-                quicksort_with_insertion(arr, pivot + 1, high);
+                quicksortWithInsertion(arr, low, pivot - 1);
+                quicksortWithInsertion(arr, pivot + 1, high);
             }
         }
     }
@@ -266,7 +259,7 @@ public class CountingSortAlgorithm {
 
 	/*
 	 * Returns maximum value in arr[0..n-1]
-	 * Used by countingsort to determine range of count array 
+	 * Used by countinSort to determine range of count array
 	 */
 	static int getMax(int[] arr, int n) {
 		int max = arr[0];
@@ -281,7 +274,7 @@ public class CountingSortAlgorithm {
 	}
 	
 	/*
-	 * Returns minimum value in arr[0..n-1]
+	 * Returns minimum value in arr[0...n-1]
 	 * Used in main to pass initial minValue bound into quicksort_modified
 	 */
 	static int getMin(int[] arr, int n) {
@@ -309,11 +302,11 @@ public class CountingSortAlgorithm {
 	    
 	    System.out.println();
 
-	   sorter.quicksort_modified(arr, 0, n - 1, max, min);
+	   sorter.quicksortModified(arr, 0, n - 1, max, min);
 
 	    System.out.println();
 
-	    sorter.countingsort(arr, n);
+	    sorter.countingSort(arr, n);
 
 	    for (int x : arr) System.out.print(x + " ");
 	}

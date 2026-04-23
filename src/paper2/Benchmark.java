@@ -4,14 +4,13 @@ import java.util.Arrays;
 import java.util.Random;
 
 /*
- *
  * Table 1: Random vs Sorted input on classic counting sort
  * Table 2: With vs without preprocessing (r >> n case)
  * Table 3: Classic QuickSort vs QuickSort + Insertion vs Proposed Hybrid (n = r)
  */
 public class Benchmark {
 
-    //we run each test 5 times and then report the average, the paper does not specify the number of trials run
+    //each test is run 5 times and then report the average, the paper does not specify the number of trials run
     static final int TRIALS = 5;
 
     /*
@@ -65,13 +64,13 @@ public class Benchmark {
                 //random input
                 int[] arr = randomArray(n, n);
                 long start = System.nanoTime();
-                new CountingSortAlgorithm().countingsort(arr, n);
+                new CountingSortAlgorithm().countingSort(arr, n);
                 randomTime += (System.nanoTime() - start) / 1000000.0;
 
                 //sorted input
                 arr = sortedArray(n);
                 start = System.nanoTime();
-                new CountingSortAlgorithm().countingsort(arr, n);
+                new CountingSortAlgorithm().countingSort(arr, n);
                 sortedTime += (System.nanoTime() - start) / 1000000.0;
             }
 
@@ -118,17 +117,17 @@ public class Benchmark {
                 int min = CountingSortAlgorithm.getMin(arrCopy, n);
 
                 long start = System.nanoTime();
-                sorter.quicksort_modified(arrCopy, 0, n - 1, max, min);
+                sorter.quicksortModified(arrCopy, 0, n - 1, max, min);
                 preprocessTime += (System.nanoTime() - start) / 1000000.0;
 
                 start = System.nanoTime();
-                sorter.countingsort_by_partitions(arrCopy, n); // <-- only change on this line
+                sorter.countingSortByPartitions(arrCopy, n); // <-- only change on this line
                 countSortTime += (System.nanoTime() - start) / 1000000.0;
 
                 // without preprocessing (plain counting sort)
                 int[] arrPlain = Arrays.copyOf(arr, n);
                 start = System.nanoTime();
-                new CountingSortAlgorithm().countingsort(arrPlain, n);
+                new CountingSortAlgorithm().countingSort(arrPlain, n);
                 plainTime += (System.nanoTime() - start) / 1000000.0;
             }
 
@@ -171,13 +170,13 @@ public class Benchmark {
                 //classic quicksort
                 int[] arr1 = Arrays.copyOf(arr, n);
                 long start = System.nanoTime();
-                new CountingSortAlgorithm().quicksort_classic(arr1, 0, n - 1);
+                new CountingSortAlgorithm().quicksortClassic(arr1, 0, n - 1);
                 quickSortTime += (System.nanoTime() - start) / 1000000.0;
 
                 //quicksort with insertion sort
                 int[] arr2 = Arrays.copyOf(arr, n);
                 start = System.nanoTime();
-                new CountingSortAlgorithm().quicksort_with_insertion(arr2, 0, n - 1);
+                new CountingSortAlgorithm().quicksortWithInsertion(arr2, 0, n - 1);
                 hybridInsertionTime += (System.nanoTime() - start) / 1000000.0;
 
                 //proposed hybrid (modified quicksort + counting sort)
@@ -186,8 +185,8 @@ public class Benchmark {
                 int max = CountingSortAlgorithm.getMax(arr3, n);
                 int min = CountingSortAlgorithm.getMin(arr3, n);
                 start = System.nanoTime();
-                sorter.quicksort_modified(arr3, 0, n - 1, max, min);
-                sorter.countingsort_by_partitions(arr3, n);
+                sorter.quicksortModified(arr3, 0, n - 1, max, min);
+                sorter.countingSortByPartitions(arr3, n);
                 proposedTime += (System.nanoTime() - start) / 1000000.0;
             }
 
@@ -200,11 +199,6 @@ public class Benchmark {
 
         System.out.println("-".repeat(80));
     }
-
-
-    // ==============
-    // helper methods
-    // ==============
 
     //generate random array of n elements with values in range [0, r-1]
     static int[] randomArray(int n, int r)
